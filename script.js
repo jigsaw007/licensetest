@@ -5,9 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const reviewDiv = document.createElement('div');
     const shuffleButton = document.getElementById('shuffle-button');
     const goToTopButton = document.getElementById('go-to-top');
+    const quizTab = document.getElementById('quiz-tab');
+    const bookmarkTab = document.getElementById('bookmark-tab');
+    const quizSection = document.getElementById('quiz-section');
+    const bookmarkSection = document.getElementById('bookmark-section');
+    const clearBookmarksButton = document.createElement('button');
     reviewDiv.id = 'review';
 
     let shuffledQuizData = [];
+    let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
 
     // Function to store the score with the current date and time
     const storeScore = (score) => {
@@ -84,18 +90,95 @@ document.addEventListener('DOMContentLoaded', () => {
             falseLabel.innerHTML = `<input type="radio" name="answer-${index}" value="F"> FALSE`;
             questionContainer.appendChild(falseLabel);
 
+            const bookmarkLabel = document.createElement('label');
+            bookmarkLabel.innerHTML = `<input type="checkbox" name="bookmark-${index}" value="bookmark"> Bookmark`;
+            questionContainer.appendChild(bookmarkLabel);
+
             form.appendChild(questionContainer);
         });
+    };
+
+    // Function to store bookmarks
+    const storeBookmark = (question) => {
+        bookmarks.push(question);
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    };
+
+    // Function to display bookmarked questions
+    const displayBookmarkedQuestions = () => {
+        const bookmarksDiv = document.getElementById('bookmarked-questions');
+        bookmarksDiv.innerHTML = '<h2>Bookmarked Questions</h2>';
+        if (bookmarks.length === 0) {
+            const emptyMessage = document.createElement('p');
+            emptyMessage.innerText = 'No bookmarked questions.';
+            bookmarksDiv.appendChild(emptyMessage);
+        } else {
+            bookmarks.forEach((item) => {
+                const questionContainer = document.createElement('div');
+                questionContainer.classList.add('question-container');
+
+                const questionParagraph = document.createElement('p');
+                questionParagraph.classList.add('question');
+                questionParagraph.innerHTML = `<strong>Question:</strong> ${item.question}<br><strong>Correct answer:</strong> ${item.answer}<br><strong>Explanation:</strong> ${item.explanation}`;
+
+                questionContainer.appendChild(questionParagraph);
+
+                if (item.image) {
+                    const image = document.createElement('img');
+                    image.src = item.image;
+                    image.alt = 'Question Image';
+                    image.classList.add('question-image');
+                    image.onerror = function () {
+                        image.style.display = 'none';
+                        const placeholder = document.createElement('div');
+                        placeholder.classList.add('image-placeholder');
+                        placeholder.innerText = 'No image available';
+                        questionContainer.appendChild(placeholder);
+                    };
+                    questionContainer.appendChild(image);
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.classList.add('image-placeholder');
+                    placeholder.innerText = 'No image available';
+                    questionContainer.appendChild(placeholder);
+                }
+
+                bookmarksDiv.appendChild(questionContainer);
+            });
+        }
+        bookmarksDiv.appendChild(clearBookmarksButton);
+    };
+
+    // Function to clear bookmarks
+    const clearBookmarks = () => {
+        bookmarks = [];
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+        displayBookmarkedQuestions();
+    };
+
+    // Initialize the clear bookmarks button
+    clearBookmarksButton.innerText = 'Clear Bookmarks';
+    clearBookmarksButton.onclick = clearBookmarks;
+
+    // Function to clear results and review sections
+    const clearResults = () => {
+        resultDiv.innerHTML = '';
+        reviewDiv.innerHTML = '';
     };
 
     shuffleButton.addEventListener('click', () => {
         shuffleQuestions();
         displayQuestions();
+        clearResults(); // Clear previous results and reviews
         submitButton.style.display = 'block'; // Show the submit button
+        resultDiv.innerHTML = ''; // Clear the result message
+        displayBookmarkedQuestions(); // Ensure bookmark section is shown correctly when starting a new quiz
     });
 
     submitButton.addEventListener('click', (event) => {
         event.preventDefault();
+        submitButton.disabled = true; // Disable the submit button
+        submitButton.style.display = 'none'; // Hide the submit button
 
         let allAnswered = true;
 
@@ -106,15 +189,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         shuffledQuizData.forEach((item, index) => {
             const selectedAnswer = document.querySelector(`input[name="answer-${index}"]:checked`);
+            const bookmarkChecked = document.querySelector(`input[name="bookmark-${index}"]`).checked;
             if (!selectedAnswer) {
                 allAnswered = false;
                 const questionContainer = document.querySelector(`.question-container[data-index="${index}"]`);
                 questionContainer.style.backgroundColor = 'lightcoral';
+            } else if (bookmarkChecked) {
+                storeBookmark(item);
             }
         });
 
         if (!allAnswered) {
             alert('Please answer all the questions before submitting.');
+            submitButton.disabled = false; // Re-enable the submit button if not all questions are answered
+            submitButton.style.display = 'block'; // Show the submit button again
             return;
         }
 
@@ -157,6 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         storeScore(score); // Store the score
         displayScores(); // Display the scores
+        displayBookmarkedQuestions(); // Display bookmarked questions
 
         if (incorrectAnswers.length > 0) {
             reviewDiv.innerHTML = '<h2>Review Incorrect Answers</h2>';
@@ -198,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Display previous scores on page load
     displayScores();
+    displayBookmarkedQuestions();
 
     // Show the button when the user scrolls down 20px from the top of the document
     window.onscroll = function() {
@@ -213,4 +303,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.scrollTop = 0; // For Safari
         document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
     });
+
+    // Tab switching functionality
+    quizTab.addEventListener('click', () => {
+        quizSection.style.display = 'block';
+        bookmarkSection.style.display = 'none';
+        quizTab.classList.add('active-tab');
+        bookmarkTab.classList.remove('active-tab');
+    });
+
+    bookmarkTab.addEventListener('click', () => {
+        quizSection.style.display = 'none';
+        bookmarkSection.style.display = 'block';
+        quizTab.classList.remove('active-tab');
+        bookmarkTab.classList.add('active-tab');
+    });
+
+    // Initially display the quiz section
+    quizSection.style.display = 'block';
+    bookmarkSection.style.display = 'none';
+    quizTab.classList.add('active-tab');
 });
