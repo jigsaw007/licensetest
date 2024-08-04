@@ -17,12 +17,30 @@ h1 {
     text-align: center;
 }
 
+.tab-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #80808038;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #838383;
+    margin: 0 5px;
+}
+
+.active-tab {
+    background-color: #007BFF;
+    color: white;
+}
+
 .question-container {
     margin-bottom: 20px;
     background-color: white;
 }
-
-
 
 .question {
     font-weight: bold;
@@ -112,9 +130,11 @@ button:hover {
 #shuffle-button:hover {
     background-color: #218838;
 }
+
 #submit-button {
     display: none;
 }
+
 #result p {
     font-size: 18px;
     font-weight: bold;
@@ -140,3 +160,13 @@ button:hover {
     background-color: #333; /* Darker background on hover */
 }
 
+#bookmarked-questions {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+}
+
+#bookmarked-questions h2 {
+    text-align: center;
+}

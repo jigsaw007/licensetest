@@ -6,22 +6,28 @@
     <title>Driving License Test</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Quicksand:wght@300..700&display=swap');
     </style>
 </head>
 <body>
-    <div class="container" id="previous-scores"></div>
     <div class="container">
         <h1>Driving License Test</h1>
-        <button id="shuffle-button">Shuffle and Start</button>
-
-        <form id="quiz-form"></form>
-        <button id="submit-button">Submit</button>
-        <div id="result"></div>
+        <div class="tab-container">
+            <button id="quiz-tab" class="tab active-tab">Quiz</button>
+            <button id="bookmark-tab" class="tab">Bookmarked Questions</button>
+        </div>
+        <div id="quiz-section">
+            <div id="previous-scores" class="container"></div>
+            <button id="shuffle-button">Shuffle and Start</button>
+            <form id="quiz-form"></form>
+            <button id="submit-button">Submit</button>
+            <div id="result"></div>
+        </div>
+        <div id="bookmark-section">
+            <div id="bookmarked-questions" class="container"></div>
+        </div>
         <button id="go-to-top" title="Go to top"><i class="fas fa-arrow-up"></i></button>
-
     </div>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <script src="quizData.js"></script>
