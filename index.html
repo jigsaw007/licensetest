@@ -12,13 +12,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Driving License Test</h1>
+        <h1>Driving License Test<br>Karimenkyo 50 Questions</h1>
         <div class="tab-container">
             <button id="quiz-tab" class="tab active-tab">Quiz</button>
             <button id="bookmark-tab" class="tab">Bookmarked Questions</button>
+            <button id="log-tab" class="tab">Log</button>
         </div>
         <div id="quiz-section">
-            <div id="previous-scores" class="container"></div>
             <button id="shuffle-button">Shuffle and Start</button>
             <form id="quiz-form"></form>
             <button id="submit-button">Submit</button>
@@ -26,6 +26,11 @@
         </div>
         <div id="bookmark-section">
             <div id="bookmarked-questions" class="container"></div>
+        </div>
+        <div id="log-section">
+            <div id="previous-scores" class="container">
+                <button id="clear-log-button">Clear Log</button>
+            </div>
         </div>
         <button id="go-to-top" title="Go to top"><i class="fas fa-arrow-up"></i></button>
     </div>

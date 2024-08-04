@@ -7,9 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const goToTopButton = document.getElementById('go-to-top');
     const quizTab = document.getElementById('quiz-tab');
     const bookmarkTab = document.getElementById('bookmark-tab');
+    const logTab = document.getElementById('log-tab');
     const quizSection = document.getElementById('quiz-section');
     const bookmarkSection = document.getElementById('bookmark-section');
+    const logSection = document.getElementById('log-section');
     const clearBookmarksButton = document.createElement('button');
+    const clearLogButton = document.getElementById('clear-log-button');
     reviewDiv.id = 'review';
 
     let shuffledQuizData = [];
@@ -26,8 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         scores.push(scoreEntry);
-        if (scores.length > 5) {
-            scores.shift(); // Keep only the latest 5 scores
+        if (scores.length > 10) {
+            scores.shift(); // Keep only the latest 10 scores
         }
 
         localStorage.setItem('scores', JSON.stringify(scores));
@@ -37,12 +40,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayScores = () => {
         const scores = JSON.parse(localStorage.getItem('scores')) || [];
         const scoresDiv = document.getElementById('previous-scores');
-        scoresDiv.innerHTML = '<h2>Last 5 Scores</h2>';
-        scores.forEach(scoreEntry => {
-            const scoreElement = document.createElement('p');
-            scoreElement.innerText = `Score: ${scoreEntry.score} - Date: ${scoreEntry.date} - Time: ${scoreEntry.time}`;
-            scoresDiv.appendChild(scoreElement);
-        });
+        scoresDiv.innerHTML = '<h2>Log</h2>';
+        if (scores.length === 0) {
+            clearLogButton.style.display = 'none';
+            const emptyMessage = document.createElement('p');
+            emptyMessage.innerText = 'No logs available.';
+            scoresDiv.appendChild(emptyMessage);
+        } else {
+            clearLogButton.style.display = 'block';
+            scores.forEach(scoreEntry => {
+                const scoreElement = document.createElement('p');
+                scoreElement.innerText = `Score: ${scoreEntry.score} - Date: ${scoreEntry.date} - Time: ${scoreEntry.time}`;
+                scoresDiv.appendChild(scoreElement);
+            });
+        }
+    };
+
+    // Function to clear scores log
+    const clearScores = () => {
+        localStorage.removeItem('scores');
+        displayScores();
     };
 
     const shuffleQuestions = () => {
@@ -109,10 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const bookmarksDiv = document.getElementById('bookmarked-questions');
         bookmarksDiv.innerHTML = '<h2>Bookmarked Questions</h2>';
         if (bookmarks.length === 0) {
+            clearBookmarksButton.style.display = 'none';
             const emptyMessage = document.createElement('p');
             emptyMessage.innerText = 'No bookmarked questions.';
             bookmarksDiv.appendChild(emptyMessage);
         } else {
+            clearBookmarksButton.style.display = 'block';
             bookmarks.forEach((item) => {
                 const questionContainer = document.createElement('div');
                 questionContainer.classList.add('question-container');
@@ -159,6 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the clear bookmarks button
     clearBookmarksButton.innerText = 'Clear Bookmarks';
     clearBookmarksButton.onclick = clearBookmarks;
+
+    // Initialize the clear log button
+    clearLogButton.addEventListener('click', clearScores);
 
     // Function to clear results and review sections
     const clearResults = () => {
@@ -308,19 +330,33 @@ document.addEventListener('DOMContentLoaded', () => {
     quizTab.addEventListener('click', () => {
         quizSection.style.display = 'block';
         bookmarkSection.style.display = 'none';
+        logSection.style.display = 'none';
         quizTab.classList.add('active-tab');
         bookmarkTab.classList.remove('active-tab');
+        logTab.classList.remove('active-tab');
     });
 
     bookmarkTab.addEventListener('click', () => {
         quizSection.style.display = 'none';
         bookmarkSection.style.display = 'block';
+        logSection.style.display = 'none';
         quizTab.classList.remove('active-tab');
         bookmarkTab.classList.add('active-tab');
+        logTab.classList.remove('active-tab');
+    });
+
+    logTab.addEventListener('click', () => {
+        quizSection.style.display = 'none';
+        bookmarkSection.style.display = 'none';
+        logSection.style.display = 'block';
+        quizTab.classList.remove('active-tab');
+        bookmarkTab.classList.remove('active-tab');
+        logTab.classList.add('active-tab');
     });
 
     // Initially display the quiz section
     quizSection.style.display = 'block';
     bookmarkSection.style.display = 'none';
+    logSection.style.display = 'none';
     quizTab.classList.add('active-tab');
 });
